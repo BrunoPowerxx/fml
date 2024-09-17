@@ -1,0 +1,36 @@
+name: test01
+on:
+  workflow_dispatch:  
+jobs:
+  test01:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v3
+      
+      # Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+      
+
+      
+      # Cache Python dependencies
+      - name: Cache Python packages
+        uses: actions/cache@v3
+        id: pip-cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+      
+      # Display cache hit/miss
+      - name: Check cache status
+        run: echo "Cache hit status: ${{ steps.pip-cache.outputs.cache-hit }}"
+
+      # Install the necessary packages
+      - name: Install the necessary packages
+        if: steps.pip-cache.outputs.cache-hit != 'true'
+        run: pip install -r requirements.txt
+
+        
